@@ -2,6 +2,8 @@
 
     - new jquery_validation_errors() and jquery_validation_errors_join()
       methods
+    
+    - fix: don't die on non-input fields
 
 1.00 2013-12-16
 

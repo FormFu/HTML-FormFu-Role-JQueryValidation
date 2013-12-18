@@ -17,7 +17,7 @@ sub jquery_validation_profile {
         my $name        = $field->nested_name;
         my $constraints = $field->get_constraints;
 
-        if ( 'url' eq $field->field_type ) {
+        if ( $field->can('field_type') && 'url' eq $field->field_type ) {
             $js{rules}{$name}{url} = 1;
 
             my @regex =
