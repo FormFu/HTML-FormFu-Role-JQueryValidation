@@ -87,13 +87,51 @@ sub jquery_validation_json {
     return JSON::Any->objToJson( $self->jquery_validation_profile );
 }
 
+sub jquery_validation_errors {
+    my ( $self )= @_;
+
+    my %message;
+
+    for my $error (@{ $self->get_errors }) {
+        my $name = $error->parent->nested_name;
+        $message{$name} ||= [];
+        push @{ $message{$name} }, $error->message;
+    }
+
+    return \%message;
+}
+
+sub jquery_validation_errors_join {
+    my $self = shift;
+
+    my $errors = $self->jquery_validation_errors;
+
+    for my $name ( keys %$errors ) {
+        if ( 2 == @_ ) {
+            $errors->{$name} =
+                join '',
+                map {
+                    $_[0] . $_ . $_[1]
+                } @{ $errors->{$name} };
+        }
+        else {
+            my $str = ( @_ && defined $_[0] ) ? $_[0]
+                    :                           "";
+
+            $errors->{$name} = join $str, @{ $errors->{$name} };
+        }
+    }
+
+    return $errors;
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-HTML::FormFu::JQueryValidation - Client-side JS constraints
+HTML::FormFu::Role::JQueryValidation - Client-side JS constraints
 
 =head1 SYNOPSIS
 
@@ -167,6 +205,46 @@ Returns a hash-ref with C<rules> and C<messages> keys.
 
 Returns L<jquery_validation_profile|/jquery_validation_profile> passed through
 L<JSON::Any/objToJson>.
+
+=head2 jquery_validation_errors
+
+Returns a hash-ref whose keys are field names with errors, and values are
+arrayrefs of error messages.
+
+=head2 jquery_validation_errors_join
+
+Arguments: $join_string
+
+Arguments: $start_string, $end_string
+
+Processes the return value of
+L<jquery_validation_errors|/jquery_validation_errors>, changing each arrayref
+of error messages into a single string.
+
+Given 1 argument, it is used as a separator to join the error messages.
+Given 2 arguments, they are used to start and end each messages.
+
+Example: if L<jquery_validation_errors|/jquery_validation_errors> returned
+the following:
+
+    {
+        foo => [
+            'Error 1',
+            'Error 2',
+        ],
+    }
+
+    # jquery_validation_errors_join( "<br/>" )
+    # outputs
+    {
+        foo => "Error 1<br/>Error 2"
+    }
+
+    # jquery_validation_errors_join( "<li>", "</li>" )
+    # outputs
+    {
+        foo => "<li>Error 1</li><li>Error 2</li>"
+    }
 
 =head1 SEE ALSO
 
