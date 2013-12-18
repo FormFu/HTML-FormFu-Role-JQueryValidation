@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.01 2013-12-18
+
     - new jquery_validation_errors() and jquery_validation_errors_join()
       methods
     
