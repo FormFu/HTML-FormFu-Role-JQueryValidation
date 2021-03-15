@@ -1,4 +1,5 @@
 package HTML::FormFu::Role::JQueryValidation;
+
 use Moose::Role;
 
 use JSON::Any;
